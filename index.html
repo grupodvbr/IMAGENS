@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Armazém de Fotos Online</title>
+  <style>
+    body { font-family: Arial; background: #f9f9f9; padding: 20px; text-align: center; }
+    input[type="file"] { margin: 10px; }
+    .galeria { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 20px; }
+    .foto { border: 1px solid #ccc; padding: 5px; background: white; }
+    .foto img { max-width: 200px; max-height: 200px; }
+    .link { font-size: 0.8em; word-break: break-all; margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <h2>📸 Armazém de Fotos Online</h2>
+  <input type="file" id="foto" accept="image/*" />
+  <button onclick="uploadFoto()">Enviar Foto</button>
+  <div class="galeria" id="galeria"></div>
+
+  <script>
+    function uploadFoto() {
+      const fileInput = document.getElementById('foto');
+      const file = fileInput.files[0];
+      if (!file) return alert("Selecione uma imagem!");
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64 = e.target.result.split(',')[1];
+        google.script.run.withSuccessHandler(adicionarImagem).salvarFoto(base64, file.name);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function adicionarImagem(obj) {
+      const galeria = document.getElementById('galeria');
+      const div = document.createElement('div');
+      div.className = "foto";
+      div.innerHTML = `<img src="${obj.url}" /><div class="link">${obj.url}</div>`;
+      galeria.prepend(div);
+    }
+  </script>
+</body>
+</html>
